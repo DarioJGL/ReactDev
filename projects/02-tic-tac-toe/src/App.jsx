@@ -65,7 +65,7 @@ function App() {
                             index={index}
                             updateBoard={updateBoard}
                         >
-                            {square}
+                        {square}
                         </Square>
                     );
                 })}
