@@ -1,6 +1,10 @@
 import './App.css'
+import responseMovies from './mocks/with-results.json'
+import withoutResults from './mocks/no-results.json'
+import { Movies } from './componets/Movies.jsx'
 
 function App () {
+  const movies = responseMovies.Search
   return (
     <div className='page'>
       <header>
@@ -12,7 +16,7 @@ function App () {
       </header>
 
       <main>
-        Aqui iran los resultados
+        <Movies movies={movies} />
       </main>
 
     </div>
