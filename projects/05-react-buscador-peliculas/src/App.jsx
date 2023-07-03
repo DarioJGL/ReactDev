@@ -1,7 +1,8 @@
 import './App.css'
 import { useMovies } from './hooks/useMovies'
 import { Movies } from './componets/Movies.jsx'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import debounce from 'just-debounce-it'
 
 function useSearch () {
   const [search, setSearch] = useState('')
@@ -34,15 +35,30 @@ function useSearch () {
 }
 
 function App () {
-  const { movies: mappedMovies } = useMovies()
+  const [sort, setSort] = useState(false)
+
   const { search, setSearch, error } = useSearch()
+  const { movies, getMovies } = useMovies({ search, sort })
+
+  const debounceGetMovies = useCallback(
+    debounce(search => {
+      getMovies({ search })
+    }, 500)
+    , [getMovies])
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    getMovies({ search })
+  }
+
+  const handleSort = () => {
+    setSort(!sort)
   }
 
   const handleChange = (event) => {
-    setSearch(event.target.value)
+    const newSearch = event.target.value
+    setSearch(newSearch)
+    debounceGetMovies(newSearch)
   }
 
   return (
@@ -51,13 +67,14 @@ function App () {
         <h1>Buscador de Peliculas</h1>
         <form className='form' onSubmit={handleSubmit}>
           <input onChange={handleChange} name='search' placeholder='Avengers, Star Wars, The Matrix ...' className='input' />
+          <input type='checkbox' onChange={handleSort} checked={sort} />
           <button className='button' type='submit'>Buscar</button>
         </form>
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </header>
 
       <main>
-        <Movies movies={mappedMovies} />
+        <Movies movies={movies} />
       </main>
 
     </div>
